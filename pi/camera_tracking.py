@@ -10,7 +10,7 @@ args = vars(ap.parse_args())
 # making an arguement for the minimun size of object it has found.
 
 cap = cv2.VideoCapture(0)
-# cap now equals the function to get the capture from the camera.
+# cap equals the function to get the capture from the camera.
 
 time.sleep(2)
 
