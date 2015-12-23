@@ -1,4 +1,3 @@
-import numpy as np
 # importing openCV.
 import cv2
 import time
@@ -11,8 +10,6 @@ args = vars(ap.parse_args())
 
 # cap equals the function to get the capture from the camera.
 cap = cv2.VideoCapture(0)
-
-time.sleep(2)
 
 # fgbg now equals the function to remove the background which is also the first frame of the video.
 fgbg = cv2.BackgroundSubtractorMOG()
@@ -45,13 +42,13 @@ while (1):
         # prints the exact co-ordinates of the circle.
         print (x + w / 2, y + h / 2)
 
-    # opens up 3 windows for each feed, the tracking is on the security feed window
-    cv2.imshow("Security Feed", frame)
+    # opens up 3 windows for each feed, the tracking is on the feed window
+    cv2.imshow("Feed", frame)
     cv2.imshow("Thresh", thresh)
     cv2.imshow("fgmask", fgmask)
-    # so i can break the cycle by pressing q.
+    # so i can break the cycle by pressing s.
     key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
+    if key == ord("s"):
         break
 
 # releases and destroys all the windows which are open after the loop has ended.
