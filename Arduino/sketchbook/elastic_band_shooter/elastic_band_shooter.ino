@@ -27,7 +27,6 @@ void loop()
   s1.write(pos);
   y = rand() % 1000;
   pos2 = map(y, 0, 1000, 70, 110);
-  
   s2.write(pos2);
   delay(500);
   s3.write(180);
