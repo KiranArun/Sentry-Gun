@@ -1,57 +1,52 @@
-# importing openCV.
 import cv2
 import time
 import argparse
+#importing the neccessery libraries 
 
-# making an arguement for the minimun size of object it has found.
+cv2.ocl.setUseOpenCL(False)
+#disenabling opencl because it causes an error to do with teh background subtraction
+
 ap = argparse.ArgumentParser()
-ap.add_argument("-a", "--min-area", type=int, default=100, help="minimum area")
+ap.add_argument("-a", "--min-area", type=int, default=200, help="minimum area")
 args = vars(ap.parse_args())
+#arguement parser with minimum area for it to pick up as motion
 
-# cap equals the function to get the capture from the camera.
 cap = cv2.VideoCapture(0)
+#getting the video out from the webcam
 
-# fgbg now equals the function to remove the background which is also the first frame of the video.
-fgbg = cv2.BackgroundSubtractorMOG()
+fgbg = cv2.createBackgroundSubtractorMOG2()
+#getting the background subtractor ready for use
 
-# each frame now goes through this loop.
 while (1):
     ret, frame = cap.read()
+    #starting the loop while  reading from the video capture
     
-    # aplying the background subtractor to find what is in the frame which is not in the original first frame.
     fgmask = fgbg.apply(frame)
+    #applying the bakground subtractor
     
-    # making the frame into binary so the object moving is white with the background black.
     thresh = fgmask
     thresh = cv2.GaussianBlur(thresh, (21, 21), 0)
     thresh = cv2.threshold(thresh, 127, 255, cv2.THRESH_BINARY)[1]
     thresh = cv2.dilate(thresh, None, iterations=2)
-    # finding the contours of the edges of the object moving.
-    (cnts,_) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
-    # going through the argument i made earlier so only objects bigger then the minimum area, are recognised.
+    #making the image binary and adjusting it for the contouring
+    _, cnts, _= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    #find the contours aroung the edges of the motion
     for c in cnts:
         if cv2.contourArea(c) < args["min_area"]:
             continue
+        #putting the contour area through the arguement parser for minimum area
         
-        # draws a rectangle around the object.
         (x, y, w, h) = cv2.boundingRect(c)
         cv2.rectangle(frame, (x, y), (x+ w, y + h), (0, 0, 255), 2)
-        # draws a circle in the middle of object, also where the bb gun is going to be pointed.
-        cv2.circle(frame, (x + w / 2, y + h / 2), 2, (0, 255, 0), -1)
-        # prints the exact co-ordinates of the circle.
-        print (x + w / 2, y + h / 2)
+        #draw the rectangle around the object
 
-    # opens up 3 windows for each feed, the tracking is on the feed window
     cv2.imshow("Feed", frame)
-    cv2.imshow("Thresh", thresh)
-    cv2.imshow("fgmask", fgmask)
-    # so i can break the cycle by pressing s.
+    #show the image in a new window
     key = cv2.waitKey(1) & 0xFF
     if key == ord("s"):
         break
+    #break the loop
 
-# releases and destroys all the windows which are open after the loop has ended.
 cap.release()
 cv2.destroyAllWindows()
-
+#stop the windows
